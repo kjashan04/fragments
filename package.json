@@ -5,7 +5,8 @@
   "description": "Cloud Computing for programmers",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint \"./src/**/*.js\""
   },
   "repository": {
     "type": "git",
@@ -15,6 +16,9 @@
   "author": "Jashanpreet Kaur",
   "license": "UNLICENSED",
   "devDependencies": {
+    "@eslint/js": "^9.26.0",
+    "eslint": "^9.26.0",
+    "globals": "^16.1.0",
     "prettier": "3.5.3"
   }
 }
