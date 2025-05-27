@@ -3,16 +3,12 @@ import globals from 'globals';
 import pluginJs from '@eslint/js';
 
 export default [
-  { files: ['**/*.{js,mjs,cjs}'], plugins: { js }, extends: ['js/recommended'] },
-  { files: ['**/*.js'], languageOptions: { sourceType: 'commonjs' } },
-  { files: ['**/*.{js,mjs,cjs}'], languageOptions: { globals: globals.node } },
+  js.configs.recommended,
+  //{ files: ['**/*.{js,mjs,cjs}'], plugins: { js }, extends: ['js/recommended'] },
   {
-    languageOptions: {
-      globals: {
-        ...globals.node,
-        ...globals.jest,
-      },
-    },
+    files: ['**/*.js'],
+    languageOptions: { sourceType: 'commonjs', globals: { ...globals.node, ...globals.jest } },
   },
+  //{ files: ['**/*.{js,mjs,cjs}'], languageOptions: { globals: globals.node } },
   pluginJs.configs.recommended,
 ];
