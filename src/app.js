@@ -1,7 +1,5 @@
 // src/app.js
 
-//import { createSuccessResponse, createErrorResponse } from '../../response.js';
-
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
@@ -11,7 +9,6 @@ const authenticate = require('./auth');
 const { createErrorResponse } = require('./response');
 
 // author and version from our package.json file
-// TODO: make sure you have updated your name in the `author` section
 //const { author, version } = require('../package.json');
 
 const logger = require('./logger');

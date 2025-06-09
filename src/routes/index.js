@@ -33,7 +33,6 @@ router.get('/', (req, res) => {
     createSuccessResponse({
       status: 'ok',
       author,
-      // Use your own GitHub URL for this!
       githubUrl: 'https://github.com/kjashan04/fragments',
       version,
     })
