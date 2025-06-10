@@ -1,0 +1,90 @@
+const express = require('express');
+const rawBody = require('body-parser').raw;
+const { Fragment } = require('../../model/fragment');
+
+const router = express.Router();
+
+// Supported content types (you can add more as needed)
+const supportedTypes = ['text/plain'];
+
+router.post(
+  '/fragments',
+  // Raw body parser middleware for all content types
+  rawBody({ type: '*/*' }),
+
+  async (req, res) => {
+    console.info('POST /v1/fragments called');
+
+    try {
+      // 1. Check authentication
+      if (!req.user) {
+        console.warn('Unauthenticated request received');
+        return res.status(401).json({ status: 'error', message: 'Unauthorized' });
+      }
+
+      // 2. Validate Content-Type
+      const contentTypeHeader = req.get('Content-Type');
+      if (!contentTypeHeader) {
+        console.warn('Missing Content-Type header');
+        return res.status(400).json({ status: 'error', message: 'Missing Content-Type' });
+      }
+
+      // Extract base MIME type (remove charset, etc.)
+      const contentType = contentTypeHeader.split(';')[0].trim();
+
+      // 3. Handle syntactically invalid content types
+      if (!/^[\w.-]+\/[\w.+-]+$/.test(contentType)) {
+        console.warn(`Invalid Content-Type syntax: ${contentTypeHeader}`);
+        return res.status(400).json({ status: 'error', message: 'Invalid Content-Type header' });
+      }
+
+      // 4. Check supported content types
+      if (!supportedTypes.includes(contentType)) {
+        console.warn(`Unsupported Content-Type: ${contentType}`);
+        return res.status(415).json({ status: 'error', message: 'Unsupported type' });
+      }
+
+      // 5. Validate body is a Buffer
+      if (!Buffer.isBuffer(req.body)) {
+        console.warn('Request body is not a Buffer');
+        return res.status(400).json({ status: 'error', message: 'Expected binary body' });
+      }
+
+      console.debug('Authenticated user:', req.user);
+      console.debug('Content-Type:', contentType);
+      console.debug('Request body size:', req.body.length);
+
+      // 6. Create and save the fragment
+      const fragment = new Fragment({
+        ownerId: req.user,
+        type: contentType,
+        size: req.body.length,
+      });
+
+      await fragment.save();
+      await fragment.setData(req.body);
+
+      // 7. Build Location header using API_URL or request host
+      const baseUrl = process.env.API_URL || `${req.protocol}://${req.headers.host}`;
+      const location = `${baseUrl}/v1/fragments/${fragment.id}`;
+      res.setHeader('Location', location);
+
+      console.info(`Fragment created: ${fragment.id}`);
+
+      // 8. Send success response
+      return res.status(201).json({
+        status: 'ok',
+        fragment: {
+          id: fragment.id,
+          type: fragment.type,
+          size: fragment.size,
+        },
+      });
+    } catch (err) {
+      console.error('Unexpected error in POST /fragments:', err);
+      return res.status(500).json({ status: 'error', message: 'Server error' });
+    }
+  }
+);
+
+module.exports = router;
