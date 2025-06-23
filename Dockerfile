@@ -2,10 +2,10 @@
 # This file defines how to create a Docker image with Node.js
 # It copies source code, installs dependencies, and runs the server
 
-FROM node:20.10.0
+FROM node:20.10.0 AS BUILD
 
 LABEL maintainer="Jashanpreet Kaur <jkaur683@myseneca.ca>"
-LABEL description="Fragments Node.js microservice"
+LABEL description="Fragments Node.js microservice(build stage)"
 
 # We default to use port 8080 in our service
 ENV PORT=8080
@@ -26,6 +26,9 @@ WORKDIR /app
 # already set our WORKDIR in a previous step.
 COPY package*.json ./
 
+# Install dependencies 
+RUN npm ci --omit=dev
+
 # Install node dependencies defined in package-lock.json
 RUN npm install
 
@@ -34,6 +37,23 @@ COPY ./src ./src
 
 # Copy our HTPASSWD file
 COPY ./tests/.htpasswd ./tests/.htpasswd
+
+# ---- Stage 2: Runtime Image ----
+FROM node:20.10.0-slim
+
+LABEL maintainer="Jashanpreet Kaur <jkaur683@myseneca.ca>"
+LABEL description="Fragments Node.js microservice (runtime stage)"
+
+# Set environment variables
+ENV PORT=8080
+ENV NPM_CONFIG_LOGLEVEL=warn
+ENV NPM_CONFIG_COLOR=false
+
+# Set working directory
+WORKDIR /app
+
+# Copy built app and dependencies from build stage
+COPY --from=build /app .
 
 # Start the container by running our server
 CMD npm start
