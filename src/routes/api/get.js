@@ -17,6 +17,21 @@ const router = express.Router();
   );
 };*/
 
+// GET /v1/fragments
+router.get('/v1/fragments', async (req, res) => {
+  try {
+    const fragments = await Fragment.byUser(req.user);
+
+    res.status(200).json(
+      createSuccessResponse({
+        fragments: fragments || [],
+      })
+    );
+  } catch (err) {
+    res.status(500).json({ status: 'error', message: err.message });
+  }
+});
+
 // GET /v1/fragments/:id/info
 router.get('/v1/fragments/:id/info', async (req, res) => {
   try {
