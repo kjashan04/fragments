@@ -2,7 +2,7 @@
 # This file defines how to create a Docker image with Node.js
 # It copies source code, installs dependencies, and runs the server
 
-FROM node:20.10.0 AS BUILD
+FROM node:20.10.0 AS build
 
 LABEL maintainer="Jashanpreet Kaur <jkaur683@myseneca.ca>"
 LABEL description="Fragments Node.js microservice(build stage)"
@@ -29,9 +29,6 @@ COPY package*.json ./
 # Install dependencies 
 RUN npm ci --omit=dev
 
-# Install node dependencies defined in package-lock.json
-RUN npm install
-
 # Copy src to /app/src/
 COPY ./src ./src
 
@@ -56,7 +53,7 @@ WORKDIR /app
 COPY --from=build /app .
 
 # Start the container by running our server
-CMD npm start
+CMD ["npm", "start"]
 
 # We run our service on port 8080
 EXPOSE 8080
