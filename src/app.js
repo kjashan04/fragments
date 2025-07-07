@@ -20,6 +20,8 @@ const pino = require('pino-http')({
 // Create an express app instance we can use to attach middleware and HTTP routes
 const app = express();
 
+const apiRoutes = require('./routes/api'); // used when doing lab 7 and could not get all unit tests pass
+
 // Use pino logging middleware
 app.use(pino);
 
@@ -38,6 +40,10 @@ app.use(compression());
 // Set up our passport authentication middleware
 passport.use(authenticate.strategy());
 app.use(passport.initialize());
+
+// when doing lab7
+app.use(require('./middleware/auth')); // authentication middleware
+app.use(apiRoutes); // mounts /v1/... endpoints
 
 // Define our routes
 app.use('/', require('./routes'));
