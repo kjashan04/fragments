@@ -1,4 +1,4 @@
-router; // src/routes/index.js
+// src/routes/index.js
 
 // importing functions from response.js
 const { createSuccessResponse } = require('../response');
@@ -14,8 +14,8 @@ const router = express.Router();
 // Our authentication middleware
 const { authenticate } = require('../auth');
 
-const getRoutes = require('./get'); // this includes your new /v1/fragments route
-router.use(getRoutes); // this makes /v1/fragments accessible
+//const getRoutes = require('./api/get'); // this includes your new /v1/fragments route
+//router.use(getRoutes); // this makes /v1/fragments accessible
 /**
  * Expose all of our API routes on /v1/* to include an API version.
  * Protect them all with middleware so you have to be authenticated

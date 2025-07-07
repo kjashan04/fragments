@@ -5,26 +5,16 @@ const { createSuccessResponse } = require('../../response');
 
 const router = express.Router();
 
-/**
+/*
  * Get a list of fragments for the current user
  */
-/*module.exports = (req, res) => {
-  res.status(200).json(
-    createSuccessResponse({
-      status: 'ok',
-      fragments: [],
-    })
-  );
-};*/
-
-// GET /v1/fragments
-router.get('/v1/fragments', async (req, res) => {
+// ✅ GET /v1/fragments - Return a list of fragments for the authenticated user
+router.get('/fragments', async (req, res) => {
   try {
     const fragments = await Fragment.byUser(req.user);
-
     res.status(200).json(
       createSuccessResponse({
-        fragments: fragments || [],
+        fragments,
       })
     );
   } catch (err) {
@@ -33,7 +23,7 @@ router.get('/v1/fragments', async (req, res) => {
 });
 
 // GET /v1/fragments/:id/info
-router.get('/v1/fragments/:id/info', async (req, res) => {
+/*router.get('/v1/fragments/:id/info', async (req, res) => {
   try {
     const fragment = await Fragment.byId(req.user, req.params.id);
 
@@ -54,6 +44,6 @@ router.get('/v1/fragments/:id/info', async (req, res) => {
   } catch (err) {
     res.status(500).json({ status: 'error', message: err.message });
   }
-});
+});*/
 
 module.exports = router;
