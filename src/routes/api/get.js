@@ -11,7 +11,9 @@ const router = express.Router();
 // ✅ GET /v1/fragments - Return a list of fragments for the authenticated user
 router.get('/fragments', async (req, res) => {
   try {
-    const fragments = await Fragment.byUser(req.user);
+    const expand = req.query.expand === '1';
+    const fragments = await Fragment.byUser(req.user, expand);
+
     res.status(200).json(
       createSuccessResponse({
         fragments,
@@ -22,8 +24,23 @@ router.get('/fragments', async (req, res) => {
   }
 });
 
+// GET /v1/fragments/:id
+router.get('/fragments/:id', async (req, res) => {
+  try {
+    const fragment = await Fragment.byId(req.user, req.params.id);
+
+    if (!fragment) {
+      return res.status(404).json({ status: 'error', message: 'Fragment not found' });
+    }
+
+    res.status(200).json(createSuccessResponse({ fragment }));
+  } catch (err) {
+    res.status(500).json({ status: 'error', message: err.message });
+  }
+});
+
 // GET /v1/fragments/:id/info
-/*router.get('/v1/fragments/:id/info', async (req, res) => {
+router.get('/fragments/:id/info', async (req, res) => {
   try {
     const fragment = await Fragment.byId(req.user, req.params.id);
 
@@ -44,6 +61,6 @@ router.get('/fragments', async (req, res) => {
   } catch (err) {
     res.status(500).json({ status: 'error', message: err.message });
   }
-});*/
+});
 
 module.exports = router;

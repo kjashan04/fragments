@@ -14,7 +14,7 @@ const {
   deleteFragment,
 } = require('./data');
 
-const supportedTypes = ['text/plain'];
+const supportedTypes = ['text/plain', 'text/markdown', 'application/json'];
 
 class Fragment {
   constructor({ id, ownerId, created, updated, type, size = 0 }) {
