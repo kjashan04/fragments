@@ -50,8 +50,8 @@ describe('POST /v1/fragments', () => {
 
     const res = await request(app)
       .post('/v1/fragments')
-      .set('Content-Type', 'application/json')
-      .send(JSON.stringify({ hello: 'world' }));
+      .set('Content-Type', 'text/csv')
+      .send('name,age\nJohn,30\nDoe,25');
 
     expect(res.status).toBe(415);
   });
