@@ -1,0 +1,35 @@
+# POST with Content-Type that includes charset
+POST http://localhost:8080/v1/fragments
+Content-Type: text/plain; charset=utf-8
+[BasicAuth]
+user1@email.com:password1
+
+`This is a fragment with charset!`
+
+HTTP/1.1 201
+[Asserts]
+header "Location" matches "^http:\/\/localhost:8080\/v1\/fragments\/[A-Za-z0-9_-]+$"
+jsonpath "$.status" == "ok"
+jsonpath "$.fragment.type" == "text/plain; charset=utf-8"
+jsonpath "$.fragment.size" == 32
+
+[Captures]
+fragmentUrl: header "Location"
+
+# GET the fragment metadata and verify the type includes charset
+#GET {{fragmentUrl}}/info
+#Authorization: Bearer eyJraWQiOiIxMDdKRVRLdEIyQWlLQzlOM3VueHBMRWF0R3QrSVR0aEZMb0RZVVZaNlNjPSIsImFsZyI6IlJTMjU2In0.eyJhdF9oYXNoIjoiQ2RkRFR1eG9DZ1ZMYjdrYUpWNzVaQSIsInN1YiI6Ijk0NzhmNDQ4LWEwMjEtNzAxNy00MmVjLTdjNDhmMDc3MDEyYyIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJpc3MiOiJodHRwczpcL1wvY29nbml0by1pZHAudXMtZWFzdC0xLmFtYXpvbmF3cy5jb21cL3VzLWVhc3QtMV9uWGlSdFBRamsiLCJjb2duaXRvOnVzZXJuYW1lIjoiamFzcyIsIm9yaWdpbl9qdGkiOiJjY2ViNzVlZS1jMzk2LTQ3MTItOTc3Mi1mYmFiMTZiYjlmYTAiLCJhdWQiOiI0ZWIwb28xNm9oZG9odTFwMWViZm5pYnVybSIsImV2ZW50X2lkIjoiZmNlM2I4NDMtOTUxNS00YWI0LWEzMjEtODE2MWFmYjBiM2UzIiwidG9rZW5fdXNlIjoiaWQiLCJhdXRoX3RpbWUiOjE3NTMxNTE2NTgsImV4cCI6MTc1MzE1NTI1OCwiaWF0IjoxNzUzMTUxNjU4LCJqdGkiOiIxYzY2YmQ0Ni0yMzA3LTRiYzAtYmFiNS0xYjMxM2I0ZWI4MzQiLCJlbWFpbCI6ImtqYXNoYW4yNzhAZ21haWwuY29tIn0.QeCEIBuVcbbFzbRgmFUlt7P7LTdOtuub6lAyyT18cCi8L-rHwiKetN0XQ89_EpsQ11MspK6QzMHbLlVNNl06T7BaSCmQzzGAHda1faCIQLHlOMnHoS_YkDyW7fS9Q-7hWj1LC_E2fBmFa-a7Ywq_TivakbxHTMy-4kNJIBIatXUbP05p2kG6JYfkwSSeSVwAA04jsve8kC9esgKQcMjW7cZLnDD_-H2G35g7WgA7AXIccQNnXdmhzgz4ZUoN7daTmIMmA56w6izcBzFb5e1sNNbgMEktZgVtRYtgaftNlhbyPJ8_aUFB_92_eYSBl6fs0_SgrLq5Je0sHgOj68bycA
+
+#HTTP/1.1 200
+#[Asserts]
+#jsonpath "$.status" == "ok"
+#jsonpath "$.fragment.type" == "text/plain; charset=utf-8"
+
+# GET the fragment data and verify content
+#GET {{fragmentUrl}}
+#Authorization: Bearer eyJraWQiOiIxMDdKRVRLdEIyQWlLQzlOM3VueHBMRWF0R3QrSVR0aEZMb0RZVVZaNlNjPSIsImFsZyI6IlJTMjU2In0.eyJhdF9oYXNoIjoiQ2RkRFR1eG9DZ1ZMYjdrYUpWNzVaQSIsInN1YiI6Ijk0NzhmNDQ4LWEwMjEtNzAxNy00MmVjLTdjNDhmMDc3MDEyYyIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJpc3MiOiJodHRwczpcL1wvY29nbml0by1pZHAudXMtZWFzdC0xLmFtYXpvbmF3cy5jb21cL3VzLWVhc3QtMV9uWGlSdFBRamsiLCJjb2duaXRvOnVzZXJuYW1lIjoiamFzcyIsIm9yaWdpbl9qdGkiOiJjY2ViNzVlZS1jMzk2LTQ3MTItOTc3Mi1mYmFiMTZiYjlmYTAiLCJhdWQiOiI0ZWIwb28xNm9oZG9odTFwMWViZm5pYnVybSIsImV2ZW50X2lkIjoiZmNlM2I4NDMtOTUxNS00YWI0LWEzMjEtODE2MWFmYjBiM2UzIiwidG9rZW5fdXNlIjoiaWQiLCJhdXRoX3RpbWUiOjE3NTMxNTE2NTgsImV4cCI6MTc1MzE1NTI1OCwiaWF0IjoxNzUzMTUxNjU4LCJqdGkiOiIxYzY2YmQ0Ni0yMzA3LTRiYzAtYmFiNS0xYjMxM2I0ZWI4MzQiLCJlbWFpbCI6ImtqYXNoYW4yNzhAZ21haWwuY29tIn0.QeCEIBuVcbbFzbRgmFUlt7P7LTdOtuub6lAyyT18cCi8L-rHwiKetN0XQ89_EpsQ11MspK6QzMHbLlVNNl06T7BaSCmQzzGAHda1faCIQLHlOMnHoS_YkDyW7fS9Q-7hWj1LC_E2fBmFa-a7Ywq_TivakbxHTMy-4kNJIBIatXUbP05p2kG6JYfkwSSeSVwAA04jsve8kC9esgKQcMjW7cZLnDD_-H2G35g7WgA7AXIccQNnXdmhzgz4ZUoN7daTmIMmA56w6izcBzFb5e1sNNbgMEktZgVtRYtgaftNlhbyPJ8_aUFB_92_eYSBl6fs0_SgrLq5Je0sHgOj68bycA
+
+#HTTP/1.1 200
+#[Asserts]
+#header "Content-Type" == "text/plain; charset=utf-8"
+#body == "This is a fragment with charset!"

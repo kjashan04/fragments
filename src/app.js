@@ -34,16 +34,9 @@ app.use(cors());
 // Use gzip/deflate compression middleware
 app.use(compression());
 
-// Use gzip/deflate compression middleware
-app.use(compression());
-
 // Set up our passport authentication middleware
 passport.use(authenticate.strategy());
 app.use(passport.initialize());
-
-// when doing lab7
-//app.use(require('./auth/auth-middleware')); // authentication middleware
-//app.use(apiRoutes); // mounts /v1/... endpoints
 
 // Define our routes
 app.use('/', require('./routes'));

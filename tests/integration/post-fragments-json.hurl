@@ -1,0 +1,41 @@
+# POST /v1/fragments with JSON content type and valid token
+POST http://localhost:8080/v1/fragments
+Content-Type: application/json
+[BasicAuth]
+user1@email.com:password1
+
+{
+  "message": "Hello, JSON fragment!"
+}
+
+HTTP/1.1 201
+
+[Asserts]
+header "Location" matches "^http://localhost:8080/v1/fragments/[A-Za-z0-9_-]+$"
+jsonpath "$.status" == "ok"
+jsonpath "$.fragment.type" == "application/json"
+jsonpath "$.fragment.size" == 40  
+
+[Captures]
+fragmentUrl: header "Location"
+
+# GET /v1/fragments/:id/info to verify metadata
+#GET {{fragmentUrl}}/info
+#Authorization: Bearer eyJraWQiOiIxMDdKRVRLdEIyQWlLQzlOM3VueHBMRWF0R3QrSVR0aEZMb0RZVVZaNlNjPSIsImFsZyI6IlJTMjU2In0.eyJhdF9oYXNoIjoiQ2RkRFR1eG9DZ1ZMYjdrYUpWNzVaQSIsInN1YiI6Ijk0NzhmNDQ4LWEwMjEtNzAxNy00MmVjLTdjNDhmMDc3MDEyYyIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJpc3MiOiJodHRwczpcL1wvY29nbml0by1pZHAudXMtZWFzdC0xLmFtYXpvbmF3cy5jb21cL3VzLWVhc3QtMV9uWGlSdFBRamsiLCJjb2duaXRvOnVzZXJuYW1lIjoiamFzcyIsIm9yaWdpbl9qdGkiOiJjY2ViNzVlZS1jMzk2LTQ3MTItOTc3Mi1mYmFiMTZiYjlmYTAiLCJhdWQiOiI0ZWIwb28xNm9oZG9odTFwMWViZm5pYnVybSIsImV2ZW50X2lkIjoiZmNlM2I4NDMtOTUxNS00YWI0LWEzMjEtODE2MWFmYjBiM2UzIiwidG9rZW5fdXNlIjoiaWQiLCJhdXRoX3RpbWUiOjE3NTMxNTE2NTgsImV4cCI6MTc1MzE1NTI1OCwiaWF0IjoxNzUzMTUxNjU4LCJqdGkiOiIxYzY2YmQ0Ni0yMzA3LTRiYzAtYmFiNS0xYjMxM2I0ZWI4MzQiLCJlbWFpbCI6ImtqYXNoYW4yNzhAZ21haWwuY29tIn0.QeCEIBuVcbbFzbRgmFUlt7P7LTdOtuub6lAyyT18cCi8L-rHwiKetN0XQ89_EpsQ11MspK6QzMHbLlVNNl06T7BaSCmQzzGAHda1faCIQLHlOMnHoS_YkDyW7fS9Q-7hWj1LC_E2fBmFa-a7Ywq_TivakbxHTMy-4kNJIBIatXUbP05p2kG6JYfkwSSeSVwAA04jsve8kC9esgKQcMjW7cZLnDD_-H2G35g7WgA7AXIccQNnXdmhzgz4ZUoN7daTmIMmA56w6izcBzFb5e1sNNbgMEktZgVtRYtgaftNlhbyPJ8_aUFB_92_eYSBl6fs0_SgrLq5Je0sHgOj68bycA
+
+#HTTP/1.1 200
+
+#[Asserts]
+#jsonpath "$.status" == "ok"
+#jsonpath "$.fragment.type" == "application/json"
+#jsonpath "$.fragment.size" == 40
+
+# GET /v1/fragments/:id to verify actual data returned
+#GET {{fragmentUrl}}
+#Authorization: Bearer eyJraWQiOiIxMDdKRVRLdEIyQWlLQzlOM3VueHBMRWF0R3QrSVR0aEZMb0RZVVZaNlNjPSIsImFsZyI6IlJTMjU2In0.eyJhdF9oYXNoIjoiQ2RkRFR1eG9DZ1ZMYjdrYUpWNzVaQSIsInN1YiI6Ijk0NzhmNDQ4LWEwMjEtNzAxNy00MmVjLTdjNDhmMDc3MDEyYyIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJpc3MiOiJodHRwczpcL1wvY29nbml0by1pZHAudXMtZWFzdC0xLmFtYXpvbmF3cy5jb21cL3VzLWVhc3QtMV9uWGlSdFBRamsiLCJjb2duaXRvOnVzZXJuYW1lIjoiamFzcyIsIm9yaWdpbl9qdGkiOiJjY2ViNzVlZS1jMzk2LTQ3MTItOTc3Mi1mYmFiMTZiYjlmYTAiLCJhdWQiOiI0ZWIwb28xNm9oZG9odTFwMWViZm5pYnVybSIsImV2ZW50X2lkIjoiZmNlM2I4NDMtOTUxNS00YWI0LWEzMjEtODE2MWFmYjBiM2UzIiwidG9rZW5fdXNlIjoiaWQiLCJhdXRoX3RpbWUiOjE3NTMxNTE2NTgsImV4cCI6MTc1MzE1NTI1OCwiaWF0IjoxNzUzMTUxNjU4LCJqdGkiOiIxYzY2YmQ0Ni0yMzA3LTRiYzAtYmFiNS0xYjMxM2I0ZWI4MzQiLCJlbWFpbCI6ImtqYXNoYW4yNzhAZ21haWwuY29tIn0.QeCEIBuVcbbFzbRgmFUlt7P7LTdOtuub6lAyyT18cCi8L-rHwiKetN0XQ89_EpsQ11MspK6QzMHbLlVNNl06T7BaSCmQzzGAHda1faCIQLHlOMnHoS_YkDyW7fS9Q-7hWj1LC_E2fBmFa-a7Ywq_TivakbxHTMy-4kNJIBIatXUbP05p2kG6JYfkwSSeSVwAA04jsve8kC9esgKQcMjW7cZLnDD_-H2G35g7WgA7AXIccQNnXdmhzgz4ZUoN7daTmIMmA56w6izcBzFb5e1sNNbgMEktZgVtRYtgaftNlhbyPJ8_aUFB_92_eYSBl6fs0_SgrLq5Je0sHgOj68bycA
+
+#HTTP/1.1 200
+
+#[Asserts]
+#header "Content-Type" == "application/json"
+#body == "{\"message\":\"Hello, JSON fragment!\"}"

@@ -5,7 +5,7 @@ const { Fragment } = require('../../model/fragment');
 const router = express.Router();
 
 // Supported content types (you can add more as needed)
-const supportedTypes = ['text/plain'];
+const supportedTypes = ['text/plain', 'text/markdown', 'application/json'];
 
 router.post(
   '/fragments',
@@ -30,17 +30,20 @@ router.post(
       }
 
       // Extract base MIME type (remove charset, etc.)
-      const contentType = contentTypeHeader.split(';')[0].trim();
+      const contentType = contentTypeHeader.trim();
+
+      // Validate only the MIME part before ';'
+      const mimeType = contentTypeHeader.split(';')[0].trim();
 
       // 3. Handle syntactically invalid content types
-      if (!/^[\w.-]+\/[\w.+-]+$/.test(contentType)) {
+      if (!/^[\w.-]+\/[\w.+-]+$/.test(mimeType)) {
         console.warn(`Invalid Content-Type syntax: ${contentTypeHeader}`);
         return res.status(400).json({ status: 'error', message: 'Invalid Content-Type header' });
       }
 
       // 4. Check supported content types
-      if (!supportedTypes.includes(contentType)) {
-        console.warn(`Unsupported Content-Type: ${contentType}`);
+      if (!supportedTypes.includes(mimeType)) {
+        console.warn(`Unsupported Content-Type: ${contentTypeHeader}`);
         return res.status(415).json({ status: 'error', message: 'Unsupported type' });
       }
 
@@ -71,13 +74,19 @@ router.post(
 
       console.info(`Fragment created: ${fragment.id}`);
 
+      // Re-fetch fragment to get updated metadata
+      const savedFragment = await Fragment.byId(req.user, fragment.id);
+
       // 8. Send success response
       return res.status(201).json({
         status: 'ok',
         fragment: {
-          id: fragment.id,
-          type: fragment.type,
-          size: fragment.size,
+          id: savedFragment.id,
+          ownerId: savedFragment.ownerId,
+          type: savedFragment.type,
+          size: savedFragment.size,
+          created: savedFragment.created,
+          updated: savedFragment.updated,
         },
       });
     } catch (err) {
