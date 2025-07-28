@@ -14,8 +14,8 @@ const router = express.Router();
 // Our authentication middleware
 const { authenticate } = require('../auth');
 
-//const getRoutes = require('./api/get'); // this includes your new /v1/fragments route
-//router.use(getRoutes); // this makes /v1/fragments accessible
+const { hostname } = require('os');
+
 /**
  * Expose all of our API routes on /v1/* to include an API version.
  * Protect them all with middleware so you have to be authenticated
@@ -37,6 +37,8 @@ router.get('/', (req, res) => {
       author,
       githubUrl: 'https://github.com/kjashan04/fragments',
       version,
+      // Include the hostname in the response
+      hostname: hostname(),
     })
   );
 });
