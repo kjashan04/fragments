@@ -23,7 +23,7 @@
   "license": "UNLICENSED",
   "devDependencies": {
     "@eslint/js": "^9.26.0",
-    "@orangeopensource/hurl": "^6.1.1",
+    "@orangeopensource/hurl": "^6.1.4",
     "cross-env": "^7.0.3",
     "eslint": "^8.57.1",
     "globals": "^16.1.0",
@@ -33,6 +33,9 @@
     "supertest": "^7.1.1"
   },
   "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.859.0",
+    "@aws-sdk/client-s3": "^3.850.0",
+    "@aws-sdk/lib-dynamodb": "^3.859.0",
     "aws-jwt-verify": "^5.1.0",
     "compression": "^1.8.0",
     "cors": "^2.8.5",

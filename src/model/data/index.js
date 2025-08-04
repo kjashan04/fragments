@@ -1,5 +1,5 @@
 // src/model/data/index.js
 
-// For now, export the in-memory data module.
-// Later, we can switch strategies based on ENV vars or config.
-module.exports = require('./memory');
+// If the environment sets an AWS Region, we'll use AWS backend
+// services (S3, DynamoDB); otherwise, we'll use an in-memory db.
+module.exports = process.env.AWS_REGION ? require('./aws') : require('./memory');
