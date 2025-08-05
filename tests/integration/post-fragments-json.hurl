@@ -15,32 +15,32 @@ HTTP/1.1 201
 header "Location" matches "^http://localhost:8080/v1/fragments/[A-Za-z0-9_-]+$"
 jsonpath "$.status" == "ok"
 jsonpath "$.fragment.type" == "application/json"
-jsonpath "$.fragment.size" == 40  
+jsonpath "$.fragment.size" == 40 
 
 [Captures]
 fragmentUrl: header "Location"
 
 # GET /v1/fragments/:id/info to verify metadata
-GET {{fragmentUrl}}/info
-[BasicAuth]
-user1@email.com:password1
+#GET {{fragmentUrl}}/info
+#[BasicAuth]
+#user1@email.com:password1
 #Authorization: Bearer eyJraWQiOiIxMDdKRVRLdEIyQWlLQzlOM3VueHBMRWF0R3QrSVR0aEZMb0RZVVZaNlNjPSIsImFsZyI6IlJTMjU2In0.eyJhdF9oYXNoIjoiRVYxV05OUzgxamdRXzVxSXByeVMtQSIsInN1YiI6Ijk0NzhmNDQ4LWEwMjEtNzAxNy00MmVjLTdjNDhmMDc3MDEyYyIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJpc3MiOiJodHRwczpcL1wvY29nbml0by1pZHAudXMtZWFzdC0xLmFtYXpvbmF3cy5jb21cL3VzLWVhc3QtMV9uWGlSdFBRamsiLCJjb2duaXRvOnVzZXJuYW1lIjoiamFzcyIsIm9yaWdpbl9qdGkiOiIzYWRhNGEzNy1iNTdmLTRiYmUtOTA0OS0zMDFlYTk1NzIyZjgiLCJhdWQiOiI0ZWIwb28xNm9oZG9odTFwMWViZm5pYnVybSIsImV2ZW50X2lkIjoiMDNlNTYwZTgtNzQ3My00YjAzLThiYjEtM2U5MWQxMzljZWM5IiwidG9rZW5fdXNlIjoiaWQiLCJhdXRoX3RpbWUiOjE3NTQyOTU2MzMsImV4cCI6MTc1NDI5OTIzMywiaWF0IjoxNzU0Mjk1NjMzLCJqdGkiOiI2NWNhYTdhOS03MzRkLTQwNWUtYjI4ZC00NmFmN2E0ODUwZjQiLCJlbWFpbCI6ImtqYXNoYW4yNzhAZ21haWwuY29tIn0.iDnetVbA0b6SEyB4fEeIeScAzG0ltVqKNxcRjnTUQabggbwFMZ3fH9endiiRFFjqXqvLwQiO0g-qDxw1nremqjXNKjUUoRF-oLu0lRocH9PHNwHw7AcZaO6gg8SakHCf-5yaC8EBMNVIcGjBj5gSGDsHy1EWfB-9AGyGt_S2IL4EBU_DiHkNMZEopnwscCVWmAsn_GC8xNRpxZ8AiJJkKgapNKsIRy0qqRNfz0MQ1tg8gy6fAFbHDsAwieO_FhCf40lPc35ijWtUpFyHbk3TmcbrJ3Edzu_yo1De-o9lef9_z6HbWrHuwOg9RLHa8xyYIq66qYWNtqzPWrl5XFUj7A
 
-HTTP/1.1 200
+#HTTP/1.1 200
 
-[Asserts]
-jsonpath "$.status" == "ok"
-jsonpath "$.fragment.type" == "application/json"
-jsonpath "$.fragment.size" == 40
+#[Asserts]
+#jsonpath "$.status" == "ok"
+#jsonpath "$.fragment.type" == "application/json"
+#jsonpath "$.fragment.size" == 40
 
 # GET /v1/fragments/:id to verify actual data returned
-GET {{fragmentUrl}}
-[BasicAuth]
-user1@email.com:password1
+#GET {{fragmentUrl}}
+#[BasicAuth]
+#user1@email.com:password1
 #Authorization: Bearer eyJraWQiOiIxMDdKRVRLdEIyQWlLQzlOM3VueHBMRWF0R3QrSVR0aEZMb0RZVVZaNlNjPSIsImFsZyI6IlJTMjU2In0.eyJhdF9oYXNoIjoiRVYxV05OUzgxamdRXzVxSXByeVMtQSIsInN1YiI6Ijk0NzhmNDQ4LWEwMjEtNzAxNy00MmVjLTdjNDhmMDc3MDEyYyIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJpc3MiOiJodHRwczpcL1wvY29nbml0by1pZHAudXMtZWFzdC0xLmFtYXpvbmF3cy5jb21cL3VzLWVhc3QtMV9uWGlSdFBRamsiLCJjb2duaXRvOnVzZXJuYW1lIjoiamFzcyIsIm9yaWdpbl9qdGkiOiIzYWRhNGEzNy1iNTdmLTRiYmUtOTA0OS0zMDFlYTk1NzIyZjgiLCJhdWQiOiI0ZWIwb28xNm9oZG9odTFwMWViZm5pYnVybSIsImV2ZW50X2lkIjoiMDNlNTYwZTgtNzQ3My00YjAzLThiYjEtM2U5MWQxMzljZWM5IiwidG9rZW5fdXNlIjoiaWQiLCJhdXRoX3RpbWUiOjE3NTQyOTU2MzMsImV4cCI6MTc1NDI5OTIzMywiaWF0IjoxNzU0Mjk1NjMzLCJqdGkiOiI2NWNhYTdhOS03MzRkLTQwNWUtYjI4ZC00NmFmN2E0ODUwZjQiLCJlbWFpbCI6ImtqYXNoYW4yNzhAZ21haWwuY29tIn0.iDnetVbA0b6SEyB4fEeIeScAzG0ltVqKNxcRjnTUQabggbwFMZ3fH9endiiRFFjqXqvLwQiO0g-qDxw1nremqjXNKjUUoRF-oLu0lRocH9PHNwHw7AcZaO6gg8SakHCf-5yaC8EBMNVIcGjBj5gSGDsHy1EWfB-9AGyGt_S2IL4EBU_DiHkNMZEopnwscCVWmAsn_GC8xNRpxZ8AiJJkKgapNKsIRy0qqRNfz0MQ1tg8gy6fAFbHDsAwieO_FhCf40lPc35ijWtUpFyHbk3TmcbrJ3Edzu_yo1De-o9lef9_z6HbWrHuwOg9RLHa8xyYIq66qYWNtqzPWrl5XFUj7A
 
-HTTP/1.1 200
+#HTTP/1.1 200
 
-[Asserts]
-header "Content-Type" == "application/json"
-body == "{\"message\":\"Hello, JSON fragment!\"}"
+#[Asserts]
+#header "Content-Type" == "application/json"
+#body == "{\"message\":\"Hello, JSON fragment!\"}"

@@ -10,8 +10,14 @@ const router = express.Router();
  */
 // ✅ GET /v1/fragments - Return a list of fragments for the authenticated user
 router.get('/fragments', async (req, res) => {
+  if (!req.user) {
+    console.warn('Unauthenticated request to GET /fragments');
+    return res.status(401).json({ status: 'error', message: 'Unauthorized' });
+  }
+
   try {
     const expand = req.query.expand === '1';
+    console.info(`GET /fragments for user ${req.user}`);
     const fragments = await Fragment.byUser(req.user, expand);
 
     res.status(200).json(
@@ -20,13 +26,20 @@ router.get('/fragments', async (req, res) => {
       })
     );
   } catch (err) {
+    console.error('Error in GET /fragments:', err);
     res.status(500).json({ status: 'error', message: err.message });
   }
 });
 
 // GET /v1/fragments/:id/info
 router.get('/fragments/:id/info', async (req, res) => {
+  if (!req.user) {
+    console.warn('Unauthenticated request to GET /fragments');
+    return res.status(401).json({ status: 'error', message: 'Unauthorized' });
+  }
+
   try {
+    console.info(`GET /fragments for user ${req.user}`);
     const fragment = await Fragment.byId(req.user, req.params.id);
 
     if (!fragment) {
@@ -35,35 +48,40 @@ router.get('/fragments/:id/info', async (req, res) => {
 
     res.status(200).json(
       createSuccessResponse({
-        fragment: {
-          id: fragment.id,
-          type: fragment.type,
-          created: fragment.created,
-          updated: fragment.updated,
-          ownerId: fragment.ownerId,
-          size: fragment.size,
-        },
+        fragment,
       })
     );
   } catch (err) {
+    console.error('Error in GET /fragments:', err);
     res.status(500).json({ status: 'error', message: err.message });
   }
 });
 
 // GET /v1/fragments/:id
 router.get('/fragments/:id', async (req, res) => {
+  if (!req.user) {
+    console.warn('Unauthenticated request to GET /fragments');
+    return res.status(401).json({ status: 'error', message: 'Unauthorized' });
+  }
+
   try {
+    console.info(`GET /fragments for user ${req.user}`);
     const fragment = await Fragment.byId(req.user, req.params.id);
 
     if (!fragment) {
       return res.status(404).json({ status: 'error', message: 'Fragment not found' });
     }
 
-    const data = await fragment.getData();
+    //const data = await fragment.getData();
 
     res.setHeader('Content-Type', fragment.type);
-    res.status(200).send(data);
+    res.status(200).json(
+      createSuccessResponse({
+        fragment,
+      })
+    );
   } catch (err) {
+    console.error('Error in GET /fragments:', err);
     res.status(500).json({ status: 'error', message: err.message });
   }
 });

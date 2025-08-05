@@ -65,17 +65,33 @@ router.post(
       });
 
       await fragment.save();
+      console.debug('Fragment saved:', {
+        id: fragment.id,
+        ownerId: fragment.ownerId,
+        type: fragment.type,
+        size: fragment.size,
+      });
+
       await fragment.setData(req.body);
+
+      // Re-fetch fragment to get updated metadata
+      const savedFragment = await Fragment.byId(req.user, fragment.id);
 
       // 7. Build Location header using API_URL or request host
       const baseUrl = process.env.API_URL || `${req.protocol}://${req.headers.host}`;
       const location = `${baseUrl}/v1/fragments/${fragment.id}`;
       res.setHeader('Location', location);
+      console.debug('Location header set to:', location);
+      console.debug('Response fragment metadata:', {
+        id: savedFragment.id,
+        ownerId: savedFragment.ownerId,
+        type: savedFragment.type,
+        size: savedFragment.size,
+        created: savedFragment.created,
+        updated: savedFragment.updated,
+      });
 
       console.info(`Fragment created: ${fragment.id}`);
-
-      // Re-fetch fragment to get updated metadata
-      const savedFragment = await Fragment.byId(req.user, fragment.id);
 
       // 8. Send success response
       return res.status(201).json({

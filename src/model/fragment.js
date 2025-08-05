@@ -59,10 +59,10 @@ class Fragment {
    * @returns Promise<Fragment>
    */
   static async byId(ownerId, id) {
-    // TODO
-    // TIP: make sure you properly re-create a full Fragment instance after getting from db.
     const metadata = await readFragment(ownerId, id);
-    if (!metadata) throw new Error('Fragment not found');
+    if (!metadata) {
+      throw new Error('Fragment not found');
+    }
     return new Fragment(metadata);
   }
 
@@ -84,6 +84,7 @@ class Fragment {
   async save() {
     // TODO
     this.updated = new Date().toISOString();
+    console.debug('Saving fragment metadata:', this);
     return writeFragment(this);
   }
 
@@ -110,6 +111,13 @@ class Fragment {
 
     this.size = data.length;
     this.updated = new Date().toISOString();
+
+    console.debug('Saving fragment data:', {
+      id: this.id,
+      ownerId: this.ownerId,
+      size: this.size,
+    });
+
     await writeFragmentData(this.ownerId, this.id, data);
     await this.save();
   }
