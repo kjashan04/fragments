@@ -5,7 +5,17 @@ const { Fragment } = require('../../model/fragment');
 const router = express.Router();
 
 // Supported content types (you can add more as needed)
-const supportedTypes = ['text/plain', 'text/markdown', 'application/json'];
+const supportedTypes = [
+  'text/plain',
+  'text/markdown',
+  'text/html',
+  'text/csv',
+  'application/yaml',
+  'image/png',
+  'image/jpeg',
+  'image/webp',
+  'application/json',
+];
 
 router.post(
   '/fragments',

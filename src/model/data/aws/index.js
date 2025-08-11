@@ -1,8 +1,7 @@
 const ddbDocClient = require('./ddbDocClient');
 const logger = require('../../../logger');
 const s3Client = require('./s3Client');
-const { DeleteObjectCommand } = require('@aws-sdk/client-s3');
-const { PutObjectCommand, GetObjectCommand } = require('@aws-sdk/client-s3');
+const { PutObjectCommand, GetObjectCommand, DeleteObjectCommand } = require('@aws-sdk/client-s3');
 const { PutCommand, GetCommand, QueryCommand, DeleteCommand } = require('@aws-sdk/lib-dynamodb');
 
 // Writes a fragment to DynamoDB. Returns a Promise.

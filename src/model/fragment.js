@@ -14,7 +14,17 @@ const {
   deleteFragment,
 } = require('./data');
 
-const supportedTypes = ['text/plain', 'text/markdown', 'application/json'];
+const supportedTypes = [
+  'text/plain',
+  'text/markdown',
+  'text/html',
+  'text/csv',
+  'application/yaml',
+  'image/png',
+  'image/jpeg',
+  'image/webp',
+  'application/json',
+];
 
 class Fragment {
   constructor({ id, ownerId, created, updated, type, size = 0 }) {
@@ -59,7 +69,9 @@ class Fragment {
    * @returns Promise<Fragment>
    */
   static async byId(ownerId, id) {
+    console.log(`Fragment.byId called with ownerId=${ownerId} id=${id}`);
     const metadata = await readFragment(ownerId, id);
+    console.log('readFragment result:', metadata);
     if (!metadata) {
       throw new Error('Fragment not found');
     }

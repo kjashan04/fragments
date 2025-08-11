@@ -1,8 +1,12 @@
 // src/routes/api/get.js
 const express = require('express');
+//const path = require('path');
 const { Fragment } = require('../../model/fragment'); // adjust if your Fragment class is elsewhere
-const { createSuccessResponse } = require('../../response');
-
+const { createSuccessResponse, createErrorResponse } = require('../../response');
+const logger = require('../../logger');
+const md = require('markdown-it')();
+const { htmlToText } = require('html-to-text');
+const sharp = require('sharp');
 const router = express.Router();
 
 /*
@@ -33,57 +37,172 @@ router.get('/fragments', async (req, res) => {
 
 // GET /v1/fragments/:id/info
 router.get('/fragments/:id/info', async (req, res) => {
-  if (!req.user) {
-    console.warn('Unauthenticated request to GET /fragments');
-    return res.status(401).json({ status: 'error', message: 'Unauthorized' });
-  }
+  const id = req.params.id;
+  const ownerId = req.user;
+
+  logger.info({ id, ownerId }, `Calling GET ${req.originalUrl}`);
 
   try {
-    console.info(`GET /fragments for user ${req.user}`);
-    const fragment = await Fragment.byId(req.user, req.params.id);
+    const fragment = await Fragment.byId(ownerId, id);
+    logger.info({ fragment }, 'Fragment was found');
 
-    if (!fragment) {
-      return res.status(404).json({ status: 'error', message: 'Fragment not found' });
-    }
-
-    res.status(200).json(
-      createSuccessResponse({
-        fragment,
-      })
-    );
+    const successResponse = createSuccessResponse({ fragment: fragment });
+    res.status(200).json(successResponse);
   } catch (err) {
-    console.error('Error in GET /fragments:', err);
-    res.status(500).json({ status: 'error', message: err.message });
+    const errorResponse = createErrorResponse(404, err.message);
+
+    logger.error({ errorResponse }, 'Failed to retrieve requested fragment');
+    res.status(404).json(errorResponse);
   }
 });
 
 // GET /v1/fragments/:id
 router.get('/fragments/:id', async (req, res) => {
-  if (!req.user) {
-    console.warn('Unauthenticated request to GET /fragments');
-    return res.status(401).json({ status: 'error', message: 'Unauthorized' });
-  }
+  const ownerId = req.user;
+  const [id, extension] = req.params.id.split('.');
+
+  logger.info({ id, ownerId, extension }, `Calling GET ${req.originalUrl}`);
 
   try {
-    console.info(`GET /fragments for user ${req.user}`);
-    const fragment = await Fragment.byId(req.user, req.params.id);
+    const fragment = await Fragment.byId(ownerId, id);
+    logger.debug({ fragment }, 'Fragment was found');
 
-    if (!fragment) {
-      return res.status(404).json({ status: 'error', message: 'Fragment not found' });
+    const data = await fragment.getData();
+    logger.debug('Fragment data has been retrieved');
+
+    // if extension was included, attempt to convert data and then return it
+    if (extension) {
+      const extensionType = getExtensionContentType(extension);
+      logger.info({ from: fragment.mimeType, to: extensionType }, 'Converting fragment');
+
+      if (fragment.formats.includes(extensionType)) {
+        const convertedData = await convertData(data, fragment.mimeType, extension);
+
+        res.setHeader('Content-Type', extensionType);
+        res.status(200).send(convertedData);
+      } else {
+        const message = `a ${fragment.mimeType} fragment cannot be return as a ${extension}`;
+        const errorResponse = createErrorResponse(415, message);
+
+        logger.error({ errorResponse }, 'Invalid operation');
+        res.status(415).json(errorResponse);
+      }
     }
-
-    //const data = await fragment.getData();
-
-    res.setHeader('Content-Type', fragment.type);
-    res.status(200).json(
-      createSuccessResponse({
-        fragment,
-      })
-    );
+    // otherwise return raw fragment data with its type
+    else {
+      res.setHeader('Content-Type', fragment.type);
+      res.status(200).send(data);
+    }
   } catch (err) {
-    console.error('Error in GET /fragments:', err);
-    res.status(500).json({ status: 'error', message: err.message });
+    logger.error({ id, err: err.message, stack: err.stack }, 'Failed to fetch fragment data');
+    const errorResponse = createErrorResponse(404, err.message);
+    logger.warn({ id, errorResponse }, 'Failed to retrieve fragment');
+    res.status(404).json(err.message);
   }
 });
+
+// get extension respective content-type
+const getExtensionContentType = (extension) => {
+  switch (extension) {
+    case 'txt':
+      return 'text/plain';
+    case 'md':
+      return 'text/markdown';
+    case 'html':
+      return 'text/html';
+    case 'json':
+      return 'application/json';
+    case 'png':
+      return 'image/png';
+    case 'jpg':
+      return 'image/jpeg';
+    case 'webp':
+      return 'image/webp';
+    case 'gif':
+      return 'image/gif';
+    default:
+      return null;
+  }
+};
+
+// convert data
+const convertData = async (data, from, to) => {
+  let convertedData = data;
+
+  switch (from) {
+    case 'text/markdown':
+      if (to == 'txt') {
+        convertedData = md.render(data.toString());
+        convertedData = htmlToText(convertedData.toString(), { wordwrap: 150 });
+      }
+      if (to == 'html') {
+        convertedData = md.render(data.toString());
+      }
+      break;
+
+    case 'text/html':
+      if (to == 'txt') {
+        convertedData = htmlToText(data.toString(), { wordwrap: 130 });
+      }
+      break;
+
+    case 'application/json':
+      if (to == 'txt') {
+        convertedData = JSON.parse(data.toString());
+      }
+      break;
+
+    case 'image/png':
+      if (to == 'jpg') {
+        convertedData = await sharp(data).jpeg().toBuffer();
+      }
+      if (to == 'webp') {
+        convertedData = await sharp(data).webp().toBuffer();
+      }
+      if (to == 'gif') {
+        convertedData = await sharp(data).gif().toBuffer();
+      }
+      break;
+
+    case 'image/jpeg':
+      if (to == 'png') {
+        convertedData = await sharp(data).png().toBuffer();
+      }
+      if (to == 'webp') {
+        convertedData = await sharp(data).webp().toBuffer();
+      }
+      if (to == 'gif') {
+        convertedData = await sharp(data).gif().toBuffer();
+      }
+      break;
+
+    case 'image/webp':
+      if (to == 'png') {
+        convertedData = await sharp(data).png().toBuffer();
+      }
+      if (to == 'jpg') {
+        convertedData = await sharp(data).jpeg().toBuffer();
+      }
+      if (to == 'gif') {
+        convertedData = await sharp(data).gif().toBuffer();
+      }
+      break;
+
+    case 'image/gif':
+      if (to == 'png') {
+        convertedData = await sharp(data).png().toBuffer();
+      }
+      if (to == 'jpg') {
+        convertedData = await sharp(data).jpeg().toBuffer();
+      }
+      if (to == 'webp') {
+        convertedData = await sharp(data).webp().toBuffer();
+      }
+      break;
+  }
+
+  logger.debug(`Fragment data was successfully converted from ${from} to ${to}`);
+  return Promise.resolve(convertedData);
+};
 
 module.exports = router;
