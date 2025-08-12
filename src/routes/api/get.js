@@ -1,7 +1,8 @@
 // src/routes/api/get.js
+
 const express = require('express');
 //const path = require('path');
-const { Fragment } = require('../../model/fragment'); // adjust if your Fragment class is elsewhere
+const { Fragment } = require('../../model/fragment');
 const { createSuccessResponse, createErrorResponse } = require('../../response');
 const logger = require('../../logger');
 const md = require('markdown-it')();

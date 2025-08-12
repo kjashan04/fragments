@@ -10,11 +10,13 @@ const supportedTypes = [
   'text/markdown',
   'text/html',
   'text/csv',
+  'application/json',
   'application/yaml',
   'image/png',
   'image/jpeg',
   'image/webp',
-  'application/json',
+  'image/avif',
+  'image/gif',
 ];
 
 router.post(

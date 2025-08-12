@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const { Fragment } = require('../../model/fragment'); // Adjust your import path
-const { createSuccessResponse } = require('../../utils'); // If you have a helper to wrap success responses
+const { Fragment } = require('../../model/fragment');
+const { createSuccessResponse } = require('../../response');
 
 router.put('/fragments/:id', async (req, res) => {
   if (!req.user) {
@@ -47,7 +47,7 @@ router.put('/fragments/:id', async (req, res) => {
     fragment.size = Buffer.byteLength(newData, 'utf8'); // or newData.length for Buffer
     fragment.updated = new Date().toISOString();
 
-    await fragment.saveMetadata(); // method to update metadata in DB or storage
+    await fragment.save(); // method to update metadata in DB or storage
 
     res.status(200).json(
       createSuccessResponse({

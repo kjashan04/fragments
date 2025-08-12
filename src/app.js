@@ -7,10 +7,6 @@ const compression = require('compression');
 const passport = require('passport');
 const authenticate = require('./auth');
 const { createErrorResponse } = require('./response');
-
-// author and version from our package.json file
-//const { author, version } = require('../package.json');
-
 const logger = require('./logger');
 const pino = require('pino-http')({
   // Use our default logger instance, which is already configured
@@ -20,7 +16,8 @@ const pino = require('pino-http')({
 // Create an express app instance we can use to attach middleware and HTTP routes
 const app = express();
 
-//const apiRoutes = require('./routes/api'); // used when doing lab 7 and could not get all unit tests pass
+app.use(express.json({ limit: '1mb' }));
+app.use(express.urlencoded({ limit: '1mb', extended: true }));
 
 // Use pino logging middleware
 app.use(pino);

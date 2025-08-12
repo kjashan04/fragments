@@ -33,6 +33,16 @@ router.get('/fragments', require('./get'));
 // You can use Buffer.isBuffer(req.body) to test if it was parsed by the raw body parser.
 router.post('/fragments', rawBody(), require('./post'));
 
-// Other routes (POST, DELETE, etc.) will go here later on...
+// GET /v1/fragments/:id
+router.get('/fragments/:id', require('./get'));
+
+// GET /v1/fragments/:id/info
+router.get('/fragments/:id/info', require('./get'));
+
+// PUT /v1/fragments/:id
+router.put('/fragments/:id', rawBody(), require('./put'));
+
+// DELETE /v1/fragments/:id
+router.delete('/fragments/:id', require('./delete'));
 
 module.exports = router;

@@ -1,6 +1,4 @@
-//const logger = require('../../logger');
 const { Fragment } = require('../../model/fragment');
-//const { createSuccessResponse, createErrorResponse } = require('../../response');
 const express = require('express');
 const router = express.Router();
 
@@ -13,7 +11,7 @@ router.delete('/fragments/:id', async (req, res) => {
 
   try {
     const fragmentId = req.params.id;
-    const ownerId = req.user;
+    const ownerId = req.user.id || req.user;
 
     // Find the fragment metadata
     const fragment = await Fragment.byId(ownerId, fragmentId);
@@ -22,10 +20,7 @@ router.delete('/fragments/:id', async (req, res) => {
     }
 
     // Delete fragment data from storage (e.g., S3)
-    await fragment.deleteData();
-
-    // Delete fragment metadata from DB/storage
-    await fragment.deleteMetadata();
+    await Fragment.delete(ownerId, fragmentId);
 
     // Return success response
     res.status(200).json({ status: 'ok' });
